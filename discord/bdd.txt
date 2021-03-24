@@ -1,0 +1,43 @@
+MEMBRE :
+  id (ip)
+  pseudo
+  mdp
+  photo de profil
+  list des ip d'amis (dans string)
+  liste des ip de serveurs (
+
+
+
+SERVEUR :
+  id
+  nom
+  image
+  liste des ip de membres
+  liste des ip de salons
+
+
+
+SALON : 
+  id
+  nom
+
+
+
+CONVERSATION :
+  id
+  liste des id de membres
+
+
+
+MESSAGE :
+  id
+  membre
+  date
+  "endroit"
+
+
+
+ROLE :
+  id
+  id serveur
+  couleur
