@@ -5,12 +5,19 @@ from pygame.rect import Rect
 import socket, select, threading, sys, os
 
 # socket
+HEADER_LENGTH = 10
+
 PORT = 5050
 IP = socket.gethostbyname(socket.gethostname())
 
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect((IP, PORT))
+client_socket.setblocking(False)
 
-
-
+username = IP.encode('utf-8')
+username_header = f"{len(username):<{HEADER_LENGTH}}".encode('utf-8')
+print(username_header + username)
+client_socket.send(username_header + username)
 
 
 
@@ -23,13 +30,15 @@ backgroundImage = pygame.image.load('assets/background.png')
 greenZeppelin = pygame.image.load('assets/greenZeppelin.png')
 loginBackground = pygame.image.load('assets/loginBackground.png')
 
-PURPLE = (133, 53, 135)
 WHITE = (255, 255, 255)
-DARK_PURPLE = (94, 39, 95)
-LIGHT_PURPLE = (189, 119, 190)
-DARK = (44, 47, 51)
-DARKER = (35, 39, 42)
-BLACK = (0, 0, 0)
+
+VEGAS_GOLD = (197, 179, 88)
+METALLIC_GOLD = (212, 175, 55)
+GOLDEN_BROWN = (153, 101, 21)
+
+DARK = (51, 51, 51)
+DARKER = (34, 34, 34)
+BLACK = (17, 17, 17)
 
 
 
@@ -51,7 +60,7 @@ class InputBox:
     def __init__(self, x, y, w, h, text=''):
         self.rect = pygame.Rect(x, y, w, h)
         self.text = text
-        self.color = PURPLE
+        self.color = METALLIC_GOLD
         self.font = pygame.font.Font('fonts/Philosopher.ttf', 12)
         self.txt_surface = self.font.render(text, True, self.color)
         self.active = False
@@ -63,13 +72,10 @@ class InputBox:
             else:
                 self.active = False
 
-        self.color = PURPLE if self.active else DARK_PURPLE
+        self.color = METALLIC_GOLD if self.active else GOLDEN_BROWN
         if event.type == pygame.KEYDOWN:
             if self.active:
-                if event.key == pygame.K_RETURN:
-                    print(self.text)
-                    self.text = ''
-                elif event.key == pygame.K_BACKSPACE:
+                if event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
                     self.text += event.unicode
@@ -90,7 +96,7 @@ class HideInputBox:
     def __init__(self, x, y, w, h, text=''):
         self.rect = pygame.Rect(x, y, w, h)
         self.text = text
-        self.color = PURPLE
+        self.color = METALLIC_GOLD
         self.font = pygame.font.Font('fonts/Philosopher.ttf', 12)
         self.txt_surface = self.font.render(text, True, self.color)
         self.active = False
@@ -102,17 +108,14 @@ class HideInputBox:
             else:
                 self.active = False
 
-        self.color = PURPLE if self.active else DARK_PURPLE
+        self.color = METALLIC_GOLD if self.active else GOLDEN_BROWN
         if event.type == pygame.KEYDOWN:
             if self.active:
-                if event.key == pygame.K_RETURN:
-                    print(self.text)
-                    self.text = ''
-                elif event.key == pygame.K_BACKSPACE:
+                if event.key == pygame.K_BACKSPACE:
                     self.text = self.text[:-1]
                 else:
                     self.text += event.unicode
-                self.txt_surface = self.font.render(''.join('*' for i in self.text), True, WHITE)
+                self.txt_surface = self.font.render(''.join('•' for i in self.text), True, WHITE)
 
     def update(self):
         width = max(200, self.txt_surface.get_width()+10)
@@ -128,11 +131,17 @@ class HideInputBox:
 
 # fonctions
 def logIn(pseudo, password):
-    print(f'[Login] pseudo: {pseudo}, password: {password}')
+    to_send = f'000{pseudo}¤{password}'.encode('utf-8')
+    header = f"{len(to_send):<{HEADER_LENGTH}}".encode('utf-8')
+    print('[log in] waiting for server...')
+    client_socket.send(header + to_send)
 
 
 def signUp(pseudo, password):
-    print(f'[Sign up] pseudo: {pseudo}, password: {password}')
+    to_send = f'001{pseudo}¤{password}'.encode('utf-8')
+    header = f"{len(to_send):<{HEADER_LENGTH}}".encode('utf-8')
+    print('[sign up] waiting for server...')
+    client_socket.send(header + to_send)
 
 
 

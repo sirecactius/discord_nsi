@@ -29,8 +29,7 @@ def receive_message(client_socket):
         return False
 
 while True:
-    read_sockets, _, exception_sockets = select.select(
-        sockets_list, [], sockets_list)
+    read_sockets, _, exception_sockets = select.select(sockets_list, [], sockets_list)
 
     for notified_socket in read_sockets:
         if notified_socket == server_socket:
@@ -46,8 +45,7 @@ while True:
         else:
             message = receive_message(notified_socket)
             if message is False:
-                print('Closed connection from: {}'.format(
-                    clients[notified_socket]['data'].decode('utf-8')))
+                print('Closed connection from: {}'.format(clients[notified_socket]['data'].decode('utf-8')))
                 sockets_list.remove(notified_socket)
                 del clients[notified_socket]
                 continue
@@ -56,8 +54,7 @@ while True:
             print(f'Received message from {user["data"].decode("utf-8")}: {message["data"].decode("utf-8")}')
             for client_socket in clients:
                 if client_socket != notified_socket:
-                    client_socket.send(
-                        user['header'] + user['data'] + message['header'] + message['data'])
+                    client_socket.send(user['header'] + user['data'] + message['header'] + message['data'])
 
     for notified_socket in exception_sockets:
         sockets_list.remove(notified_socket)
